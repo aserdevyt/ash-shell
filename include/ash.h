@@ -39,6 +39,6 @@ void print_prompt(const char *distro_icon, const char *display_dir, char *prompt
 bool ash_get_config_bool(const char *homedir, const char *key, bool default_value);
 void ash_create_config(const char *homedir);
 void syntax_highlight(const char *input);
-void handle_cd(const char *path);
+int handle_cd(const char *path);
 
 #endif // ASH_H
