@@ -1,11 +1,7 @@
 
 # Maintainer: aserdevyt <aserdevyt@outlook.com>
 pkgname=ash-shell-git
-pkgver() {
-  cd "$srcdir/ash-shell"
-  # Use commit count and short hash for versioning
-  echo "r$(git rev-list --count HEAD).g$(git rev-parse --short HEAD)"
-}
+pkgver=git
 pkgrel=1
 pkgdesc="A modern, secure, feature-rich Linux shell written in C"
 arch=('x86_64')
