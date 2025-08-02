@@ -16,6 +16,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <dirent.h>
+#include <stdbool.h>
 
 #define ASH_MAX_ALIASES 128
 #define ASH_MAX_COMMANDS 4096
@@ -35,6 +36,8 @@ void free_commands(void);
 void ensure_ashrc(const char *homedir);
 void run_ashrc(const char *homedir);
 void print_prompt(const char *distro_icon, const char *display_dir, char *prompt);
+bool ash_get_config_bool(const char *homedir, const char *key, bool default_value);
+void ash_create_config(const char *homedir);
 void syntax_highlight(const char *input);
 void handle_cd(const char *path);
 

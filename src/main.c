@@ -1,7 +1,10 @@
 // main.c - Entry point for ash shell
 // Implements main loop, built-ins, and shell logic
 
+#define _POSIX_C_SOURCE 200809L
 #include "ash.h"
+#include <signal.h>
+#include <time.h>
 
 int main() {
     // Get home directory
@@ -9,6 +12,34 @@ int main() {
     const char *homedir = pw ? pw->pw_dir : NULL;
     // Ensure ~/.ashrc exists
     ensure_ashrc(homedir);
+    // Ensure ~/.config/ash.conf exists and handle first time logic
+    ash_create_config(homedir);
+    if (!ash_get_config_bool(homedir, "first_time", false)) {
+        printf("\033[1;36mWelcome to ash!\033[0m\n\n");
+        printf("This is your first time running ash.\n");
+        printf("this project is in early development.\n");
+        printf("please report any issues you encounter.\n");
+        printf("make sure to update this shell from the aur or github.\n");
+        printf("fell free to contribute in https://github.com/aserdevyt/ash-shell.\n");
+        printf("Your shell is now configurable via ~/.config/ash.conf\n");
+        printf("Edit this file to change options like hiding the OS icon.\n\n");
+        // Set first_time to true for future runs
+        char conf_path[ASH_MAX_PATH];
+        snprintf(conf_path, sizeof(conf_path), "%s/.config/ash.conf", homedir);
+        FILE *f = fopen(conf_path, "r+");
+        if (f) {
+            char buf[1024];
+            size_t len = fread(buf, 1, sizeof(buf)-1, f);
+            buf[len] = 0;
+            rewind(f);
+            char *ft = strstr(buf, "first_time=false");
+            if (ft) {
+                strcpy(ft, "first_time=true");
+                fwrite(buf, 1, strlen(buf), f);
+            }
+            fclose(f);
+        }
+    }
     // Build command list for tab completion
     build_command_list(homedir);
     // Ignore SIGINT in shell
@@ -71,7 +102,11 @@ int main() {
             snprintf(display_dir, sizeof(display_dir), "%s", cwd);
         }
         char prompt[ASH_PROMPT_SIZE];
-        print_prompt(distro_icon, display_dir, prompt);
+        // Check config for hide_icon
+        bool hide_icon = ash_get_config_bool(homedir, "hide_icon", false);
+        char icon[16];
+        strcpy(icon, hide_icon ? "" : distro_icon);
+        print_prompt(icon, display_dir, prompt);
         char *input = readline(prompt);
         // Built-in clear
         if (input && strcmp(input, "clear") == 0) {
