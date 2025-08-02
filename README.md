@@ -1,12 +1,12 @@
-# ash - A Modern Linux Shell in C
+# ash - A  Linux Shell in C
 
 ## Overview
 
-**ash** is a secure, feature-rich Linux shell written in C. It supports advanced command execution, pipes, redirection, logical operators, custom prompts, tab completion, aliases, environment management, and more.
+**ash** is a secure, Linux shell written in C. It supports advanced command execution, pipes, redirection, logical operators, custom prompts, tab completion, aliases, environment management, and more.
 
 ## Features
 
-- Customizable prompt with Linux distro icon and current directory
+-  prompt with Linux distro icon and current directory
 - Tab completion for executables in `/bin`, `/usr/bin`, `~/.local/bin`, and custom paths via `PATH+=` in `~/.ashrc`
 - Built-in commands: `cd`, `clear`, `history`, `version`, `status`, `export`, `help`
 - Alias support via `~/.ashrc`
@@ -70,7 +70,7 @@ make
 
 ## License
 
-MIT License
+gpl v3 License
 
 ## Author
 
