@@ -69,7 +69,7 @@ TokenList tokenize(const char *input);
 void free_tokens(TokenList *tokens);
 Command *parse_command(TokenList *tokens);
 void free_command(Command *cmd);
-
+char* expand_variables(const char* input);
 
 //
 // End of Parser.h Definitions
@@ -245,6 +245,7 @@ int execute_segment(Command *head, const char *original_input) {
     
     while (cmd) {
         if (!cmd->argv[0]) {
+            // If the command is empty, just move to the next one
             cmd = cmd->next;
             continue;
         }
@@ -356,10 +357,16 @@ int execute_commands(Command *head, const char *original_input) {
     Command *current = head;
 
     // Check for variable assignment which is a special case.
+    // Ensure it's not a command with a leading variable, like `echo $VAR=val`
     char *eq = strchr(original_input, '=');
-    if (eq && eq > original_input && *(eq - 1) != ' ' && strchr(original_input, ' ') == NULL) {
+    if (eq && (eq > original_input) && isalpha(*(eq - 1)) && (strchr(original_input, ' ') == NULL)) {
         char *key = strndup(original_input, eq - original_input);
-        set_variable(key, eq + 1);
+        char *expanded_value = expand_variables(eq + 1);
+        if(expanded_value) {
+            set_variable(key, expanded_value);
+            setenv(key, expanded_value, 1);
+            free(expanded_value); // Free the dynamically allocated string
+        }
         free(key);
         return 0; // Success
     }
@@ -369,8 +376,12 @@ int execute_commands(Command *head, const char *original_input) {
         char *eq_pos = strchr(original_input + 7, '=');
         if (eq_pos) {
             char *key = strndup(original_input + 7, eq_pos - (original_input + 7));
-            set_variable(key, eq_pos + 1);
-            setenv(key, eq_pos + 1, 1);
+            char *expanded_value = expand_variables(eq_pos + 1);
+            if(expanded_value) {
+                set_variable(key, expanded_value);
+                setenv(key, expanded_value, 1);
+                free(expanded_value);
+            }
             free(key);
         }
         return 0;
@@ -474,7 +485,57 @@ void builtin_status(int last_status, double last_time) {
     printf("Last command time: %.3f seconds\n", last_time);
 }
 
+void run_script_file(const char *filename) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("ash");
+        exit(1);
+    }
+
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    while ((read = getline(&line, &len, file)) != -1) {
+        if (read > 0 && line[read - 1] == '\n') {
+            line[read - 1] = '\0';
+        }
+        
+        if (strlen(line) == 0) {
+            continue;
+        }
+        
+        // Expand variables before tokenizing
+        char *expanded_line = expand_variables(line);
+        if (expanded_line == NULL || strlen(expanded_line) == 0) {
+            if (expanded_line) free(expanded_line);
+            continue;
+        }
+
+        TokenList tokens = tokenize(expanded_line);
+        Command *cmd_list = parse_command(&tokens);
+        
+        if (cmd_list) {
+            execute_commands(cmd_list, expanded_line);
+            free_command(cmd_list);
+        }
+        free_tokens(&tokens);
+        
+        if (expanded_line) free(expanded_line);
+    }
+    
+    free(line);
+    fclose(file);
+    exit(0);
+}
+
 int main(int argc, char *argv[]) {
+    // Check if a script file is provided as an argument
+    if (argc > 1) {
+        run_script_file(argv[1]);
+        return 0; // The run_script_file function will handle exit
+    }
+
     // Check if the program name is available and create a copy.
     if (argc > 0) {
         shell_name = strdup(argv[0]);
@@ -618,8 +679,16 @@ int main(int argc, char *argv[]) {
         add_history(input);
         append_history(1, hist_path);
         
+        // Expand variables and aliases before parsing
+        char *expanded_input = expand_variables(input);
+        if (expanded_input == NULL || strlen(expanded_input) == 0) {
+            if (expanded_input) free(expanded_input);
+            free(input);
+            continue;
+        }
+        
         // Alias substitution
-        char *processed_input = strdup(input);
+        char *processed_input = strdup(expanded_input);
         for (int i = 0; processed_input && i < alias_count; ++i) {
             if (strncmp(processed_input, aliases[i], strlen(aliases[i])) == 0 && (processed_input[strlen(aliases[i])] == ' ' || processed_input[strlen(aliases[i])] == '\0')) {
                 size_t newlen = strlen(alias_cmds[i]) + strlen(processed_input) + 2;
@@ -640,6 +709,7 @@ int main(int argc, char *argv[]) {
         // If the alias resulted in a null command, skip
         if (!processed_input) {
             free(input);
+            free(expanded_input);
             continue;
         }
         
@@ -665,6 +735,7 @@ int main(int argc, char *argv[]) {
         free_tokens(&tokens);
         
         if (processed_input) free(processed_input);
+        if (expanded_input) free(expanded_input);
         free(input);
     }
     
