@@ -130,4 +130,6 @@ make
 ```bash
 sudo make install
 ```
+# contribute 
 
+fell free to __contribute__ to this project in github
