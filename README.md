@@ -18,6 +18,9 @@ __Job Control:__(bugged): manage em with ```jobs``` make em foreground ```fg``` 
 __Configuration:__ Supports a customizable user experience through a startup script ```~/.ashrc``` and a config file ```~/.config/ash.conf``` 
 
 __prompt:__  Displays the current working directory and a customizable icon based on your Linux distribution.
+<img width="212" height="28" alt="2025-08-03T18:53:07,872125896+03:00" src="https://github.com/user-attachments/assets/a34fc61d-536f-488a-be9c-f7cd4cc4e6b6" />
+<img width="1140" height="401" alt="2025-08-03T18:53:17,947623250+03:00" src="https://github.com/user-attachments/assets/550df21f-a69f-4809-b01e-cb2156e4a921" />
+
 
 __Alias Support:__ Define custom aliases in ```~/.ashrc``` to simplify complex or frequently used commands.
 
