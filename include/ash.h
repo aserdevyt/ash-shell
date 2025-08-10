@@ -22,6 +22,8 @@
 #define ASH_MAX_COMMANDS 4096
 #define ASH_MAX_PATH 1024
 #define ASH_PROMPT_SIZE 2048
+#define ASH_MAX_GIT_BRANCH 128 // New definition for Git branch buffer size
+#define ASH_MAX_ICON_LEN 32 // Increased buffer size for icon string
 
 extern char **commands;
 extern size_t commands_count;
@@ -35,7 +37,7 @@ void free_aliases(void);
 void free_commands(void);
 void ensure_ashrc(const char *homedir);
 void run_ashrc(const char *homedir);
-void print_prompt(const char *distro_icon, const char *display_dir, char *prompt);
+void print_prompt(const char *distro_icon, const char *display_dir, const char *git_branch, char *prompt);
 bool ash_get_config_bool(const char *homedir, const char *key, bool default_value);
 void ash_create_config(const char *homedir);
 void syntax_highlight(const char *input);

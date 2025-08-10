@@ -113,8 +113,8 @@ TokenList tokenize(const char *input) {
                     buf_idx = 0;
                 }
                 
-                // Handle multi-character operators like '&&' and '||'
-                if ((*p == '&' && *(p+1) == '&') || (*p == '|' && *(p+1) == '|')) {
+                // Handle multi-character operators like '&&', '||', and '>>'
+                if ((*p == '&' && *(p+1) == '&') || (*p == '|' && *(p+1) == '|') || (*p == '>' && *(p+1) == '>')) {
                     buffer[0] = *p;
                     buffer[1] = *(p+1);
                     buffer[2] = '\0';
@@ -306,7 +306,7 @@ Command *parse_command(TokenList *tokens) {
             current_cmd = current_cmd->next;
             arg_index = 0;
         } else if (strcmp(current_token->value, "&") == 0) {
-            current_cmd->type = CMD_BACKGROUND;
+            current_cmd->type = CMD_BG;
             current_cmd->next = (Command *)malloc(sizeof(Command));
             if (current_cmd->next == NULL) {
                 perror("ash: memory allocation failed");
@@ -344,6 +344,13 @@ Command *parse_command(TokenList *tokens) {
             if (current_token->next != NULL) {
                 current_cmd->redir_out = expand_variables(current_token->next->value);
                 current_token = current_token->next;
+                current_cmd->redir_append = false; // Truncate
+            }
+        } else if (strcmp(current_token->value, ">>") == 0) {
+            if (current_token->next != NULL) {
+                current_cmd->redir_out = expand_variables(current_token->next->value);
+                current_token = current_token->next;
+                current_cmd->redir_append = true; // Append
             }
         } else {
             if (arg_index < MAX_ARGS - 1) {

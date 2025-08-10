@@ -24,6 +24,7 @@
 #include "../include/ash.h"
 #include "../include/builtins.h"
 #include "../include/vars.h"
+#include "../include/git.h" // New Git header
 
 //
 // Parser.h Definitions (for a self-contained file)
@@ -431,6 +432,7 @@ void builtin_help() {
     printf("\n\033[1;36mWelcome to ash!\033[0m\n\n");
     printf("Features:\n");
     printf("- Customizable prompt with Linux distro icon and current directory\n");
+    printf("- Git branch in prompt\n"); // Added this line
     printf("- Tab completion for all executables in /bin, /usr/bin, ~/.local/bin, and custom paths via PATH+= in ~/.ashrc\n");
     printf("- Command history saved to ~/.ashhistory\n");
     printf("- Built-in cd command\n");
@@ -547,6 +549,7 @@ int main(int argc, char *argv[]) {
     struct sigaction sa;
     memset(&sa, 0, sizeof(sa));
     sa.sa_handler = handle_sigchld;
+    sa.sa_flags = SA_RESTART | SA_NOCLDSTOP;
     sigaction(SIGCHLD, &sa, NULL);
 
     // Get home directory
@@ -592,7 +595,7 @@ int main(int argc, char *argv[]) {
     signal(SIGINT, SIG_IGN);
     
     // Detect Linux distro for prompt icon
-    char distro_icon[16] = "󰻀"; // Default icon
+    char distro_icon[ASH_MAX_ICON_LEN] = "󰻀"; // Default icon
     FILE *os_release = fopen("/etc/os-release", "r");
     if (!os_release) {
         fprintf(stderr, "ash: could not open /etc/os-release\n");
@@ -606,11 +609,18 @@ int main(int argc, char *argv[]) {
                     char *nl = strchr(id, '\n'); if (nl) *nl = 0;
                     if (*id == '"') id++;
                     char *endq = strchr(id, '"'); if (endq) *endq = 0;
+                    
                     if (strcmp(id, "arch") == 0) strcpy(distro_icon, "󰣇");
                     else if (strcmp(id, "debian") == 0) strcpy(distro_icon, "");
                     else if (strcmp(id, "ubuntu") == 0) strcpy(distro_icon, "");
                     else if (strcmp(id, "linuxmint") == 0) strcpy(distro_icon, "󰣭");
                     else if (strcmp(id, "gentoo") == 0) strcpy(distro_icon, "");
+                    else if (strcmp(id, "fedora") == 0) strcpy(distro_icon, "");
+                    else if (strcmp(id, "opensuse") == 0) strcpy(distro_icon, "");
+                    else if (strcmp(id, "centos") == 0) strcpy(distro_icon, "");
+                    else if (strcmp(id, "rhel") == 0) strcpy(distro_icon, "");
+                    else if (strcmp(id, "manjaro") == 0) strcpy(distro_icon, "");
+                    else if (strcmp(id, "void") == 0) strcpy(distro_icon, "");
                     break;
                 }
             }
@@ -633,6 +643,7 @@ int main(int argc, char *argv[]) {
     read_history(hist_path);
     
     char cwd[ASH_MAX_PATH];
+    char git_branch[ASH_MAX_GIT_BRANCH]; // New variable for git branch
     
     while (1) {
         static int last_status = 0;
@@ -657,12 +668,15 @@ int main(int argc, char *argv[]) {
         } else {
             snprintf(display_dir, sizeof(display_dir), "%s", cwd);
         }
+
+        // Get the current git branch name
+        get_git_branch(cwd, git_branch, sizeof(git_branch));
         
         char prompt[ASH_PROMPT_SIZE];
         bool hide_icon = ash_get_config_bool(homedir, "hide_icon", false);
-        char icon[16];
+        char icon[ASH_MAX_ICON_LEN];
         strcpy(icon, hide_icon ? "" : distro_icon);
-        print_prompt(icon, display_dir, prompt);
+        print_prompt(icon, display_dir, git_branch, prompt);
         
         char *input = readline(prompt);
         

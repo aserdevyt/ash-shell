@@ -14,7 +14,7 @@ typedef enum {
     CMD_OR,         // ||
     CMD_SEMI,       // ;
     CMD_PIPE,       // |
-    CMD_BACKGROUND, // &
+    CMD_BG, // &
     CMD_END         // end of command list
 } CmdType;
 
@@ -35,6 +35,7 @@ typedef struct Command {
     char *argv[MAX_ARGS]; // Array of arguments for execvp
     char *redir_in;       // Input redirection file
     char *redir_out;      // Output redirection file
+    bool redir_append;    // True if output redirection is '>>'
     CmdType type;         // The separator to the next command
     struct Command *next; // Pointer to the next command in a pipeline
 } Command;

@@ -22,6 +22,7 @@ set(ASH_SRC
     src/parser.c
     src/prompt.c
     src/vars.c
+    src/git.c
 )
 
 # Adds the executable with the specified source files.
