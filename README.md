@@ -1,12 +1,14 @@
 # Ash Shell 🐚
 
+
 [![AUR version](https://img.shields.io/aur/version/ash-shell-git)](https://aur.archlinux.org/packages/ash-shell-git)
 [![AUR votes](https://img.shields.io/aur/votes/ash-shell-git)](https://aur.archlinux.org/packages/ash-shell-git)
-[![GitHub license](https://img.shields.io/github/license/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell/blob/main/LICENSE)
+[![License: GPLv3](https://img.shields.io/github/license/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell/blob/main/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/aserdevyt/ash-shell?style=social)](https://github.com/aserdevyt/ash-shell/stargazers)
 [![Top language](https://img.shields.io/github/languages/top/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell)
 [![Lines of code](https://img.shields.io/tokei/lines/github/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell)
- 
+[![Last commit](https://img.shields.io/github/last-commit/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell/commits/main)
+
 __ash-shell__ is a POSIX-compliant shell designed for gnu/linux 
 
 ## ⚠️warning:
