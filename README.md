@@ -1,13 +1,21 @@
 # Ash Shell 🐚
-
-
 [![AUR version](https://img.shields.io/aur/version/ash-shell-git)](https://aur.archlinux.org/packages/ash-shell-git)
 [![AUR votes](https://img.shields.io/aur/votes/ash-shell-git)](https://aur.archlinux.org/packages/ash-shell-git)
-[![License: GPLv3](https://img.shields.io/github/license/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/aserdevyt/ash-shell?style=social)](https://github.com/aserdevyt/ash-shell/stargazers)
+[![License](https://img.shields.io/github/license/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell/blob/main/LICENSE)
 [![Top language](https://img.shields.io/github/languages/top/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell)
+[![Languages count](https://img.shields.io/github/languages/count/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell)
 [![Lines of code](https://img.shields.io/tokei/lines/github/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell)
+[![Repo size](https://img.shields.io/github/repo-size/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell)
 [![Last commit](https://img.shields.io/github/last-commit/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell/commits/main)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell/commits/main)
+[![Contributors](https://img.shields.io/github/contributors/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell/graphs/contributors)
+[![Open issues](https://img.shields.io/github/issues/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell/issues)
+[![Pull requests](https://img.shields.io/github/issues-pr/aserdevyt/ash-shell)](https://github.com/aserdevyt/ash-shell/pulls)
+[![Releases](https://img.shields.io/github/v/release/aserdevyt/ash-shell?include_prereleases)](https://github.com/aserdevyt/ash-shell/releases)
+[![GitHub stars](https://img.shields.io/github/stars/aserdevyt/ash-shell?style=social)](https://github.com/aserdevyt/ash-shell/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/aserdevyt/ash-shell?style=social)](https://github.com/aserdevyt/ash-shell/network/members)
+[![GitHub watchers](https://img.shields.io/github/watchers/aserdevyt/ash-shell?style=social)](https://github.com/aserdevyt/ash-shell/watchers)
+
 
 __ash-shell__ is a POSIX-compliant shell designed for gnu/linux 
 
