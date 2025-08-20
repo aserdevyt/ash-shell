@@ -1,5 +1,6 @@
 # 🍕 Contributing Guide (aka how to become a legend)
 ## also this shell has nothing to do with the other ash people are telling me about
+## also if you see a bug in the shell please fix it cuss the scripting mechanism is soo buggy 💀
 So you wanna contribute? Bet. This repo loves chaos but also **needs your brainpower** 🧠✨. Don’t worry, it’s easier than microwaving pizza rolls at 3AM. Here’s the play-by-play:  
 
 ---
