@@ -131,6 +131,11 @@ hide_icon=false
 
 # installation
 
+### pacman repo
+```
+bash <(curl -fsSL https://raw.githubusercontent.com/aserdevyt/aserdev-repo/refs/heads/main/install.sh) && sudo pacman -Sy ash-shell
+```
+
 ### from the aur(archlinux)
 
 ```bash
