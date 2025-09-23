@@ -17,7 +17,7 @@
 [![GitHub watchers](https://img.shields.io/github/watchers/aserdevyt/ash-shell?style=social)](https://github.com/aserdevyt/ash-shell/watchers)
 
 
-__ash-shell__ is a POSIX-compliant shell designed for gnu/linux 
+__ash-shell__ is a linux shell designed for gnu/linux 
 
 ## ⚠️warning:
 this shell is full of buggs and in an early stage i don't recomend using it daily untill i make sure that it is safe enough to use, but feel free to use in a __VM__ or in a test enviroment
