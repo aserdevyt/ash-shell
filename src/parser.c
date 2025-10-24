@@ -203,57 +203,73 @@ extern char *shell_name;
  * @return A newly allocated string with variables expanded.
  */
 char* expand_variables(const char* token_value) {
-    // If the token is NULL or doesn't contain a '$', just return a copy.
-    if (!token_value || !strchr(token_value, '$')) {
+    // Defensive: if token_value is NULL return NULL so callers can handle it.
+    if (!token_value) return NULL;
+
+    // If there is no '$' in the token, return a duplicate of the original.
+    if (!strchr(token_value, '$')) {
         return strdup(token_value);
     }
 
-    char expanded_buffer[4096] = {0}; // Large buffer for expanded string
-    char *write_ptr = expanded_buffer;
+    // Use a fixed buffer but guard against overflow by tracking remaining space.
+    char expanded_buffer[4096] = {0}; // fallback buffer
+    size_t max_len = sizeof(expanded_buffer) - 1;
+    size_t written = 0;
     const char *read_ptr = token_value;
-    
-    while (*read_ptr) {
+
+    while (*read_ptr && written < max_len) {
         if (*read_ptr == '$') {
             read_ptr++; // Move past the '$'
-            
+
             // Check for special parameters like $0
             if (*read_ptr == '0') {
                 read_ptr++;
                 if (shell_name) {
-                    strcpy(write_ptr, shell_name);
-                    write_ptr += strlen(shell_name);
+                    size_t sl = strlen(shell_name);
+                    size_t copy = (sl <= (max_len - written)) ? sl : (max_len - written);
+                    if (copy > 0) {
+                        memcpy(expanded_buffer + written, shell_name, copy);
+                        written += copy;
+                    }
                 }
             } else {
                 // Find the end of the variable name
                 const char *var_start = read_ptr;
-                while (*read_ptr && (isalnum(*read_ptr) || *read_ptr == '_')) {
+                while (*read_ptr && (isalnum((unsigned char)*read_ptr) || *read_ptr == '_')) {
                     read_ptr++;
                 }
-                
+
                 size_t var_name_len = read_ptr - var_start;
                 if (var_name_len > 0) {
-                    char var_name[var_name_len + 1];
+                    char var_name[128];
+                    if (var_name_len >= sizeof(var_name)) var_name_len = sizeof(var_name) - 1;
                     strncpy(var_name, var_start, var_name_len);
                     var_name[var_name_len] = '\0';
-                    
-                    // Get the value from the environment
+
+                    // Get the value from the environment (or variables)
                     char *var_value = getenv(var_name);
-                    
                     if (var_value) {
-                        strcpy(write_ptr, var_value);
-                        write_ptr += strlen(var_value);
+                        size_t vl = strlen(var_value);
+                        size_t copy = (vl <= (max_len - written)) ? vl : (max_len - written);
+                        if (copy > 0) {
+                            memcpy(expanded_buffer + written, var_value, copy);
+                            written += copy;
+                        }
                     }
                 } else {
                     // If there's a '$' but no variable name, just copy the '$'
-                    *write_ptr++ = '$';
+                    if (written < max_len) {
+                        expanded_buffer[written++] = '$';
+                    }
                 }
             }
         } else {
-            *write_ptr++ = *read_ptr++;
+            expanded_buffer[written++] = *read_ptr++;
         }
     }
-    
-    *write_ptr = '\0';
+
+    // Ensure null termination
+    expanded_buffer[written] = '\0';
     return strdup(expanded_buffer);
 }
 
@@ -358,6 +374,12 @@ Command *parse_command(TokenList *tokens) {
             }
         }
         current_token = current_token->next;
+    }
+    // Ensure argv is NULL-terminated for the last command
+    if (arg_index < MAX_ARGS) {
+        current_cmd->argv[arg_index] = NULL;
+    } else {
+        current_cmd->argv[MAX_ARGS - 1] = NULL;
     }
     current_cmd->type = CMD_END;
     return head_cmd;

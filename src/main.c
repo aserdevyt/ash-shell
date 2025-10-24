@@ -503,7 +503,10 @@ void run_script_file(const char *filename) {
             line[read - 1] = '\0';
         }
         
-        if (strlen(line) == 0) {
+        // Skip empty lines and comments (lines starting with '#')
+        char *p = line;
+        while (*p && isspace((unsigned char)*p)) p++;
+        if (*p == '#' || *p == '\0') {
             continue;
         }
         
@@ -573,16 +576,43 @@ int main(int argc, char *argv[]) {
         
         char conf_path[ASH_MAX_PATH];
         snprintf(conf_path, sizeof(conf_path), "%s/.config/ash.conf", homedir);
-        FILE *f = fopen(conf_path, "r+");
+        FILE *f = fopen(conf_path, "r");
         if (f) {
-            char buf[1024];
-            size_t len = fread(buf, 1, sizeof(buf)-1, f);
-            buf[len] = 0;
-            rewind(f);
-            char *ft = strstr(buf, "first_time=false");
-            if (ft) {
-                strcpy(ft, "first_time=true");
-                fwrite(buf, 1, strlen(buf), f);
+            if (fseek(f, 0, SEEK_END) == 0) {
+                long fsize = ftell(f);
+                rewind(f);
+                if (fsize < 0) fsize = 0;
+                size_t bufsize = (size_t)fsize + 1;
+                char *buf = malloc(bufsize + 16);
+                if (buf) {
+                    size_t read = fread(buf, 1, bufsize - 1, f);
+                    buf[read] = '\0';
+                    char *found = strstr(buf, "first_time=false");
+                    if (found) {
+                        const char *oldval = "first_time=false";
+                        const char *newval = "first_time=true";
+                        size_t before = found - buf;
+                        size_t tail_len = strlen(found + strlen(oldval));
+                        size_t newlen = before + strlen(newval) + tail_len;
+                        char *newbuf = malloc(newlen + 1);
+                        if (newbuf) {
+                            memcpy(newbuf, buf, before);
+                            memcpy(newbuf + before, newval, strlen(newval));
+                            memcpy(newbuf + before + strlen(newval), found + strlen(oldval), tail_len + 1);
+
+                            char tmp_path[ASH_MAX_PATH];
+                            snprintf(tmp_path, sizeof(tmp_path), "%s.tmp", conf_path);
+                            FILE *tf = fopen(tmp_path, "w");
+                            if (tf) {
+                                fwrite(newbuf, 1, newlen, tf);
+                                fclose(tf);
+                                rename(tmp_path, conf_path);
+                            }
+                            free(newbuf);
+                        }
+                    }
+                    free(buf);
+                }
             }
             fclose(f);
         }

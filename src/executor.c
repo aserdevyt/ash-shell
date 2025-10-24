@@ -1,3 +1,5 @@
+#warning "src/executor.c is deprecated: main.c currently implements execution. Remove or sync these implementations to avoid duplicate symbols."
+
 // executor.c - Implements the logic for executing a parsed command list.
 
 #include "../include/executor.h"
