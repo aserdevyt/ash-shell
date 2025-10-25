@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write
+      contents: write  # needed to push changes
 
     steps:
       - name: Checkout repo
@@ -40,6 +40,9 @@ jobs:
 
       - name: Copy new ash binary
         run: cp build/ash ./ash
+
+      - name: Make binary executable
+        run: chmod +x ./ash
 
       - name: Commit and push new binary
         run: |
