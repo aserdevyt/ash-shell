@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write  # allow pushing to repo
+      contents: write
 
     steps:
       - name: Checkout repo
@@ -25,7 +25,9 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install dependencies
-        run: sudo apt-get update && sudo apt-get install -y cmake make g++
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake make g++ libreadline-dev
 
       - name: Configure project
         run: cmake -B build
