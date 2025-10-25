@@ -163,6 +163,15 @@ make
 ```bash
 sudo make install
 ```
+
+### use prebuilt linux binary
+github actions always makes sure that this is the latest
+
+```bash
+sudo curl -L https://raw.githubusercontent.com/aserdevyt/ash-shell/main/ash -o /usr/bin/ash && sudo chmod +x /usr/bin/ash
+
+```
+
 # contribute 
 
 fell free to __contribute__ to this project in github
