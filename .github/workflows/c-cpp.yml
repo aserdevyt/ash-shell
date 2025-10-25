@@ -1,0 +1,24 @@
+name: Build with CMake
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake make g++
+
+      - name: Configure project with CMake
+        run: cmake .
+
+      - name: Build with make
+        run: make -j$(nproc)
