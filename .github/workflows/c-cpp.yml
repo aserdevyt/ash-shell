@@ -47,5 +47,5 @@ jobs:
       - name: Commit and push new binary
         run: |
           git add ash
-          git commit -m "Auto-build: updated ash binary"
+          git diff --cached --quiet && echo "No changes to commit 🤷" || git commit -m "Auto-build: updated ash binary"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
