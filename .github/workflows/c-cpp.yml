@@ -1,4 +1,4 @@
-name: Build with CMake
+name: Build and Commit ash
 
 on:
   push:
@@ -10,15 +10,37 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write  # allow pushing to repo
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Setup Git credentials
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install dependencies
         run: sudo apt-get update && sudo apt-get install -y cmake make g++
 
-      - name: Configure project with CMake
-        run: cmake .
+      - name: Configure project
+        run: cmake -B build
 
-      - name: Build with make
-        run: make -j$(nproc)
+      - name: Build project
+        run: cmake --build build -j$(nproc)
+
+      - name: Remove old ash binary
+        run: rm -f ./ash
+
+      - name: Copy new ash binary
+        run: cp build/ash ./ash
+
+      - name: Commit and push new binary
+        run: |
+          git add ash
+          git commit -m "Auto-build: updated ash binary"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
